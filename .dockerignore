@@ -1,0 +1,37 @@
+# Git files
+.git
+.gitignore
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment folders (assuming names)
+venv/
+.venv/
+env/
+
+# IDE/Editor specific
+.vscode/
+.idea/
+.cursor/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Local config/secrets (if any)
+.env
+
+# Deployment artifacts (if not needed in image)
+deploy_package/
+deploy_instructions.md
+deploy_to_heroku.bat
+docker.list.temp
+
+# Test data (if large and not needed for runtime)
+test_images/
+
+# Any other temporary/local files
+*.log
+*.tmp 

@@ -1,0 +1,68 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# PlantDefender UI Implementation Rules
+
+## 1. Project Setup
+- Clone repo: git clone (your_repo_url) && cd (your_project_folder)
+- Install dependencies: pip install -r requirements.txt
+- Add new dependencies: pip install requests groq python-dotenv
+
+## 2. Directory Structure Setup
+- Create new CSS/JS folders if not exist
+- Create chatbot.py at root level
+
+## 3. Required Files to Create/Update
+
+### CSS Files
+- static/css/style.css: Main styles with color scheme #2E7D32, #4CAF50, etc.
+- static/css/chatbot.css: Chatbot specific styles
+
+### JavaScript Files
+- static/js/main.js: General functions
+- static/js/chatbot.js: Chatbot interaction logic
+
+### Python Files
+- app.py: Update routes
+- chatbot.py: Create new for Groq API integration
+
+### Templates
+- templates/base.html: Update with new nav bar
+- templates/submit.html: Recreate with new 2-column layout
+- templates/index.html: Update styling
+
+## 4. Implementation Priorities
+1. Start with HTML/CSS structure
+2. Add JavaScript interactivity
+3. Connect backend API
+4. Test end-to-end
+5. **IMPORTANT:** Always restart the Flask server (`python app.py`) after any code change (Frontend build or Backend modification) to apply updates.
+
+## 5. Chatbot Integration
+- Create .env file with: GROQ_API_KEY=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
+- Use Llama 4 model in API calls
+- Context should include detected disease info
+
+## 6. Must Have Features
+- Green header with "PlantDefender" logo
+- Two-column layout on results page
+- Chatbot window with suggestion buttons
+- Disease info cards with description and treatment
+- Accuracy bar showing confidence level
+- Responsive design for mobile
+
+## 7. Testing Checklist
+- Image upload works
+- Disease detection shows correct result
+- Chatbot toggle button works
+- Chat messages appear correctly
+- Suggestion buttons work
+- Mobile layout looks good
+
+## 8. Launch Command
+
+
+
+- python app.py (run from Flask Deployed App directory)

@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlantDefender</title>
+    <style>
+        :root {
+            --primary: #2E7D32;
+            --primary-light: #4CAF50;
+            --primary-lighter: #8BC34A;
+            --primary-dark: #1B5E20;
+            --secondary: #2196F3;
+            --accent: #FFC107;
+            --white: #FFFFFF;
+            --gray-50: #FAFAFA;
+            --gray-100: #F5F5F5;
+            --gray-200: #EEEEEE;
+            --gray-300: #E0E0E0;
+            --gray-400: #BDBDBD;
+            --gray-700: #616161;
+            --gray-900: #212121;
+            --error: #D32F2F;
+            --success-bg: #E8F5E9;
+            --info-bg: #E3F2FD;
+            --suggestion-bg: #F1F8E9;
+            --suggestion-border: #AED581;
+            --suggestion-text: #558B2F;
+            --shadow-light: rgba(0,0,0,0.1);
+            --shadow-medium: rgba(0,0,0,0.15);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: var(--gray-100);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+        
+        /* Header and Navigation */
+        header {
+            width: 100%;
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 0 2rem;
+            box-shadow: 0 2px 4px var(--shadow-light);
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0; /* Prevent header from shrinking */
+        }
+        
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 16px;
+            transition: opacity 0.2s;
+        }
+        
+        nav a:hover {
+            opacity: 0.8;
+        }
+        
+        /* Main Content Area */
+        .main-container {
+            display: flex;
+            flex: 1; /* Allow container to grow */
+            padding: 1.5rem;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1400px; /* Increase max-width for two columns */
+            margin: 0 auto; /* Center the container */
+        }
+        
+        .left-column {
+            flex: 3; /* Takes more space */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .right-column {
+            flex: 2; /* Takes less space */
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 60px - 3rem); /* Adjust height based on header and padding */
+            max-height: 800px; /* Set a max height if needed */
+        }
+        
+        /* Card Styling */
+        .card {
+            background-color: var(--white);
+            border-radius: 5px;
+            box-shadow: 0 1px 3px var(--shadow-light);
+            padding: 1.5rem 2rem;
+            border: 1px solid var(--gray-300);
+            margin-bottom: 1.5rem; /* Added back for spacing if needed */
+        }
+        
+        .column-card { /* Specific style for cards within columns */
+             background-color: var(--white);
+            border-radius: 5px;
+            box-shadow: 0 1px 3px var(--shadow-light);
+            padding: 1.5rem 2rem;
+            border: 1px solid var(--gray-300);
+            flex-grow: 1; /* Allow card to fill space */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Prevent content overflow */
+        }
+        
+        .card-title {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        /* Upload Section */
+        .upload-section { /* Now part of left-column */
+            /* Removed display flex/column as it's handled by parent */
+        }
+        
+        .file-input-wrapper {
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+        
+        .file-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+         .file-input:hover {
+            border-color: var(--primary-light);
+         }
+        
+        .preview-container {
+            border: 1px solid var(--gray-300);
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            text-align: center;
+            background-color: var(--gray-50);
+            min-height: 200px; /* Ensure space for preview */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+         .preview-container p {
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+         }
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 3px;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            border: none;
+            color: var(--white);
+            font-size: 14px;
+            text-align: center;
+        }
+         .btn:active {
+             transform: scale(0.98);
+         }
+        
+        .btn-primary {
+            background-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-primary:disabled {
+            background-color: var(--gray-300);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #1976D2;
+        }
+        
+        .btn-accent {
+            background-color: var(--accent);
+            color: var(--gray-900);
+        }
+        
+        .btn-accent:hover {
+            background-color: #FFA000;
+        }
+        
+        .buttons-container {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: flex-start; /* Align buttons to the start */
+        }
+        
+        /* Error Message */
+        .error-message {
+            color: var(--error);
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 5px;
+            background-color: rgba(211, 47, 47, 0.1);
+            border: 1px solid rgba(211, 47, 47, 0.2);
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        /* Results Section */
+        .results-section { /* Styles for the results content within the left card */
+            display: flex; /* Use flexbox for image and info side-by-side */
+            gap: 2rem;
+            flex-grow: 1; /* Allow results section to grow */
+            margin-top: 1rem; /* Space from title */
+        }
+        
+        .image-container {
+            border: 1px solid var(--gray-300);
+            border-radius: 3px;
+            overflow: hidden;
+            background-color: var(--white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 250px;
+            width: 300px; /* Fixed width for image container */
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+        
+        .result-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .result-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem; /* Adjust gap */
+            flex-grow: 1; /* Allow info to take remaining space */
+        }
+        
+        .disease-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Accuracy Progress Bar */
+        .accuracy-container {
+            margin-bottom: 0.5rem;
+        }
+        
+        .accuracy-bar {
+            width: 100%;
+            height: 20px;
+            background-color: var(--gray-300);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .accuracy-fill {
+            height: 100%;
+            background-color: var(--primary-light);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .accuracy-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: bold;
+            font-size: 12px;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.3); /* Add shadow for better readability */
+        }
+        
+        /* Info Boxes */
+        .info-box {
+            background-color: var(--white);
+            border: 1px solid var(--gray-300);
+            border-radius: 5px;
+            padding: 1rem;
+            font-size: 13px; /* Slightly larger base font */
+        }
+        
+        .info-box h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .info-box p, .info-box li {
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+        
+        .info-box ul {
+            padding-left: 1.2rem; /* Adjust padding */
+            margin-top: 0.5rem;
+        }
+        
+        /* Chatbot Styles (Right Column) */
+        #chat-component { /* Renamed container for clarity */
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* Fill the right column card */
+            background-color: var(--white); /* Ensure background */
+        }
+        
+        .chat-header {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 0.8rem 1.5rem; /* Adjusted padding */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 5px 5px 0 0; /* Match card radius */
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+        
+        .chat-header h3 {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        /* Remove close button as chat is always visible */
+        /* .close-chat { ... } */
+        
+        .messages {
+            flex: 1; /* Takes up available space */
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem; /* Adjust message gap */
+            background-color: var(--white); /* Ensure background */
+            border-bottom: 1px solid var(--gray-200); /* Separator line */
+        }
+        
+        .message {
+            max-width: 85%; /* Allow slightly wider messages */
+            padding: 0.7rem 1rem;
+            border-radius: 15px; /* More rounded messages */
+            word-break: break-word;
+            animation: fadeIn 0.3s ease-out;
+            line-height: 1.4;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.bot {
+            align-self: flex-start;
+            background-color: var(--success-bg);
+            color: var(--gray-900);
+            border: 1px solid var(--suggestion-border);
+             border-radius: 15px 15px 15px 5px; /* Different corner */
+        }
+        
+        .message.user {
+            align-self: flex-end;
+            background-color: var(--info-bg);
+            color: var(--gray-900);
+            border: 1px solid #90CAF9; /* Light blue border */
+             border-radius: 15px 15px 5px 15px; /* Different corner */
+        }
+        
+        .suggestions {
+            padding: 0.75rem 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            background-color: var(--gray-50); /* Light background for suggestions */
+            border-bottom: 1px solid var(--gray-200);
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+        
+        .suggestion {
+            background-color: var(--suggestion-bg);
+            color: var(--suggestion-text);
+            border: 1px solid var(--suggestion-border);
+            padding: 0.4rem 0.9rem; /* Adjust padding */
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .suggestion:hover {
+            background-color: #E0F2F1; /* Slightly different hover */
+            box-shadow: 0 1px 2px var(--shadow-light);
+        }
+        
+        .chat-input-container {
+            display: flex;
+            padding: 1rem;
+            background-color: var(--gray-100);
+            gap: 0.75rem; /* Adjust gap */
+            align-items: center;
+            border-radius: 0 0 5px 5px; /* Match card radius */
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+        
+        .chat-input {
+            flex: 1;
+            border: 1px solid var(--gray-300);
+            border-radius: 20px;
+            padding: 0.75rem 1.2rem; /* More padding */
+            outline: none;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        
+        .chat-input:focus {
+            border-color: var(--primary);
+        }
+        
+        .send-button {
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 40px; /* Slightly larger */
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            font-size: 18px; /* Adjust icon size */
+        }
+         .send-button:hover {
+            background-color: var(--primary-dark);
+         }
+         .send-button:active {
+             transform: scale(0.95);
+         }
+        
+        /* Remove chat toggle button styles */
+        /* .chat-toggle { ... } */
+        
+        .typing-indicator {
+            align-self: flex-start;
+            background-color: var(--gray-200);
+            color: var(--gray-700);
+            padding: 0.6rem 0.9rem;
+            border-radius: 15px 15px 15px 5px;
+            display: inline-flex; /* Use inline-flex */
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 13px;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .typing-indicator span { /* Dots container */
+            display: inline-block;
+            overflow: hidden;
+            vertical-align: bottom;
+            animation: dotAnimation 1.5s infinite steps(4);
+            width: 1.5em; /* Width based on font size */
+        }
+        
+        @keyframes dotAnimation {
+             0% { width: 0; }
+             100% { width: 1.5em; } /* Controls speed/steps */
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-container {
+                max-width: 100%;
+                padding: 1rem;
+                gap: 1rem;
+            }
+            .left-column { flex: 1; } /* Equal width */
+            .right-column { flex: 1; } /* Equal width */
+        }
+        
+        
+        @media (max-width: 992px) { /* Tablet */
+             .main-container {
+                 flex-direction: column;
+                 height: auto; /* Let height adjust */
+                 max-width: 700px; /* Limit width in single column */
+                 margin: 0 auto;
+             }
+            .right-column {
+                 height: 500px; /* Fixed height for chat on mobile */
+                 max-height: 60vh; /* Limit to viewport height */
+             }
+             .results-section {
+                 flex-direction: column;
+             }
+             .image-container {
+                 width: 100%; /* Full width */
+                 height: 200px; /* Adjust height */
+             }
+        }
+        
+        
+        @media (max-width: 768px) { /* Mobile */
+            header { padding: 0 1rem; }
+            nav ul { display: none; } /* Hide nav links on small screens */
+            .card-title { font-size: 20px; }
+             .main-container { padding: 0.5rem; gap: 1rem;}
+             .column-card { padding: 1rem; }
+            .buttons-container {
+                flex-direction: column;
+                width: 100%;
+            }
+            .btn { width: 100%; }
+        }
+        
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">PlantDefender</div>
+        <nav>
+            <ul>
+                <li><a href="#">Trang chủ</a></li>
+                <li><a href="#">Thư viện</a></li>
+                <li><a href="#">Liên hệ</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="main-container">
+        <!-- Left Column: Upload and Results -->
+        <div class="left-column">
+            <div id="left-card" class="column-card">
+                <!-- Initial Upload View -->
+                <div id="upload-view">
+                    <h2 class="card-title">Tải ảnh cây trồng</h2>
+                    <div class="upload-section">
+                        <div class="file-input-wrapper">
+                            <input type="file" id="file-input" class="file-input" accept="image/*" aria-label="Chọn ảnh cây trồng để phân tích" title="Chọn ảnh cây trồng">
+                        </div>
+                        <div id="preview-container" class="preview-container" style="display: none;">
+                            <p>Xem trước:</p>
+                            <img id="preview-image" class="preview-image" alt="Xem trước ảnh đã chọn">
+                        </div>
+                        <div class="buttons-container">
+                            <button id="analyze-button" class="btn btn-primary" disabled>Phan tích</button>
+                        </div>
+                        <p id="error-message" class="error-message" style="display: none;"></p>
+                    </div>
+                </div>
+                
+                <!-- Results View (Initially Hidden) -->
+                <div id="results-view" style="display: none;">
+                    <h2 id="results-title" class="card-title">Kết quả phân tích</h2>
+                    <div class="results-section">
+                        <div class="image-container">
+                            <img id="result-image" class="result-image" alt="Ảnh cây bệnh" src="">
+                        </div>
+                        <div class="result-info">
+                            <div>
+                                <div class="disease-name" id="disease-name"></div>
+                                <div class="accuracy-container">
+                                    <div class="accuracy-bar">
+                                        <div class="accuracy-fill" id="accuracy-fill" style="width: 0%;"></div>
+                                        <div class="accuracy-text">Độ chính xác: <span id="accuracy-value">0</span>%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-box">
+                                <h4>Mô tả</h4>
+                                <p id="disease-description"></p>
+                            </div>
+                            <div class="info-box">
+                                <h4>Biện pháp xử lý</h4>
+                                <div id="disease-prevention"></div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="buttons-container">
+                        <button id="analyze-again-button" class="btn btn-accent">Phân tích ảnh khác</button>
+                        <!-- Add other buttons if needed -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column: Chatbot -->
+        <div class="right-column">
+            <div class="column-card"> <!-- Wrap chat in a card -->
+                <div id="chat-component"> <!-- Chat component container -->
+                    <div class="chat-header">
+                        <h3>Trợ lý Nông Nghiệp</h3>
+                        <!-- Removed close button -->
+                    </div>
+                    <div id="messages" class="messages">
+                         <!-- Initial bot message can be added here or via JS -->
+                         <div class="message bot">Xin chào! Hãy tải ảnh lên để tôi phân tích hoặc đặt câu hỏi nếu bạn cần trợ giúp.</div>
+                    </div>
+                    <div id="suggestions" class="suggestions" style="display: none;"></div>
+                    <div class="chat-input-container">
+                        <input type="text" id="chat-input" class="chat-input" placeholder="Nhập câu hỏi của bạn...">
+                        <button id="send-button" class="send-button" title="Gửi tin nhắn">➤</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Removed Chat Toggle Button -->
+    <!-- <button id="chat-toggle" class="chat-toggle" style="display: none;" title="Mở chat">💬</button> -->
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const fileInput = document.getElementById('file-input');
+            const previewContainer = document.getElementById('preview-container');
+            const previewImage = document.getElementById('preview-image');
+            const analyzeButton = document.getElementById('analyze-button');
+            const analyzeAgainButton = document.getElementById('analyze-again-button');
+            const errorMessage = document.getElementById('error-message');
+            const uploadView = document.getElementById('upload-view');
+            const resultsView = document.getElementById('results-view');
+            const resultImage = document.getElementById('result-image');
+            const diseaseName = document.getElementById('disease-name');
+            const accuracyFill = document.getElementById('accuracy-fill');
+            const accuracyValue = document.getElementById('accuracy-value');
+            const diseaseDescription = document.getElementById('disease-description');
+            const diseasePrevention = document.getElementById('disease-prevention');
+            const messagesContainer = document.getElementById('messages');
+            const suggestionsContainer = document.getElementById('suggestions');
+            const chatInput = document.getElementById('chat-input');
+            const sendButton = document.getElementById('send-button');
+            const resultsTitle = document.getElementById('results-title');
+            
+            // Variables
+            let selectedFile = null;
+            let predictionResult = null;
+            let isTyping = false;
+            
+            // Initial State
+            showUploadView(); // Show upload view initially
+            
+            // Event Listeners
+            fileInput.addEventListener('change', handleFileSelect);
+            analyzeButton.addEventListener('click', analyzeImage);
+            analyzeAgainButton.addEventListener('click', showUploadView); // Reset to upload view
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) { // Send on Enter, allow newline with Shift+Enter
+                     e.preventDefault(); // Prevent default newline on Enter
+                    sendMessage();
+                }
+            });
+            sendButton.addEventListener('click', sendMessage);
+            
+            // Functions
+            function showUploadView() {
+                uploadView.style.display = 'block';
+                resultsView.style.display = 'none';
+                fileInput.value = ''; // Clear file input
+                previewContainer.style.display = 'none';
+                previewImage.src = '';
+                analyzeButton.disabled = true;
+                errorMessage.style.display = 'none';
+                selectedFile = null;
+                predictionResult = null;
+                 // Optional: Clear chat or add a message indicating readiness for new analysis
+                // clearChat();
+                // addMessage("Sẵn sàng phân tích ảnh mới.", true);
+            }
+            
+             function showResultsView() {
+                uploadView.style.display = 'none';
+                resultsView.style.display = 'block';
+            }
+            
+             function clearChat() {
+                 messagesContainer.innerHTML = '';
+                 suggestionsContainer.innerHTML = '';
+                 suggestionsContainer.style.display = 'none';
+             }
+            
+            
+            function handleFileSelect(e) {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    selectedFile = file;
+                    previewContainer.style.display = 'block';
+                    analyzeButton.disabled = false;
+                    errorMessage.style.display = 'none';
+                    // Reset previous results visually if any
+                    resultsView.style.display = 'none';
+                    uploadView.style.display = 'block'; // Make sure upload view is visible
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    selectedFile = null;
+                    previewContainer.style.display = 'none';
+                    analyzeButton.disabled = true;
+                     if (file) { // If a file was selected but wasn't an image
+                         showError('Vui lòng chọn một tệp ảnh hợp lệ (jpg, png, gif, v.v.).');
+                     }
+                }
+            }
+            
+            async function analyzeImage() {
+                if (!selectedFile) {
+                    showError('Vui lòng chọn một tệp ảnh trước.');
+                    return;
+                }
+                
+                // Set loading state
+                analyzeButton.disabled = true;
+                analyzeButton.textContent = 'Đang phân tích...';
+                errorMessage.style.display = 'none';
+                clearChat(); // Clear chat for new analysis
+                addMessage("Đang phân tích hình ảnh, vui lòng đợi...", true); // Inform user
+                
+                try {
+                    const formData = new FormData();
+                    formData.append('image', selectedFile);
+                    
+                    const response = await fetch('/api/test', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || `Lỗi HTTP! Trạng thái: ${response.status}`);
+                    }
+                    
+                    if (data.success && data.prediction) {
+                        predictionResult = data.prediction;
+                        
+                        // Update results UI
+                        resultsTitle.textContent = `Kết quả phân tích: ${predictionResult.title}`; // Update title
+                        resultImage.src = predictionResult.image_url;
+                        diseaseName.textContent = predictionResult.title;
+                        accuracyFill.style.width = `${predictionResult.confidence}%`;
+                        accuracyValue.textContent = predictionResult.confidence;
+                        diseaseDescription.textContent = predictionResult.description;
+                        
+                        // Format prevention steps
+                        const preventionSteps = predictionResult.prevent.split(/[\n\r]+/).map(s => s.trim()).filter(step => step !== '');
+                        if (preventionSteps.length > 0) {
+                            const ulElement = document.createElement('ul');
+                            preventionSteps.forEach(step => {
+                                const liElement = document.createElement('li');
+                                liElement.textContent = step.replace(/^\d+\.\s*/, ''); // Remove numbered prefixes
+                                ulElement.appendChild(liElement);
+                            });
+                            diseasePrevention.innerHTML = '';
+                            diseasePrevention.appendChild(ulElement);
+                        } else {
+                            diseasePrevention.textContent = "Không có thông tin phòng ngừa.";
+                        }
+                        
+                        // Show results view
+                        showResultsView();
+                        
+                        // Update chat
+                        clearChat(); // Clear "Analyzing..." message
+                        const initialMessage = `Tôi đã phát hiện bệnh ${predictionResult.title} với độ chính xác ${predictionResult.confidence}%. Bạn có thể hỏi tôi thêm về cách điều trị hoặc thông tin chi tiết về bệnh này.`;
+                        addMessage(initialMessage, true);
+                        
+                        // Get suggestions
+                        fetchSuggestions(predictionResult.title);
+                    } else {
+                         clearChat(); // Clear "Analyzing..." message
+                         addMessage("Rất tiếc, không thể phân tích hình ảnh. Vui lòng thử lại.", true);
+                        throw new Error(data.error || "Dự đoán thất bại hoặc định dạng phản hồi không hợp lệ.");
+                    }
+                } catch (err) {
+                    console.error("Submission Error:", err);
+                    showError(`Phân tích thất bại: ${err.message}`);
+                    predictionResult = null;
+                     clearChat(); // Clear "Analyzing..." message
+                     addMessage(`Đã xảy ra lỗi khi phân tích: ${err.message}. Vui lòng thử lại.`, true);
+                     showUploadView(); // Go back to upload view on error
+                } finally {
+                    // Reset button
+                    analyzeButton.disabled = false; // Re-enable after analysis attempt
+                    analyzeButton.textContent = 'Phan tích';
+                     // Keep analyzeButton disabled if no file is selected after an error
+                     if (!selectedFile) {
+                         analyzeButton.disabled = true;
+                     }
+                }
+            }
+            
+            // Chat functions remain largely the same, but no toggle logic needed
+            async function sendMessage() {
+                const text = chatInput.value.trim();
+                if (!text || isTyping) return; // Prevent sending empty messages or while bot is typing
+                
+                addMessage(text, false);
+                chatInput.value = '';
+                showTypingIndicator();
+                 suggestionsContainer.style.display = 'none'; // Hide suggestions after sending
+                
+                try {
+                    const diseaseContext = predictionResult ? {
+                        name: predictionResult.title,
+                        description: predictionResult.description,
+                        prevent: predictionResult.prevent,
+                        confidence: predictionResult.confidence
+                    } : null;
+                    
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            prompt: text,
+                            disease_context: diseaseContext
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    hideTypingIndicator(); // Hide typing indicator regardless of response status
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Failed to get response from server');
+                    }
+                    
+                    addMessage(data.response, true);
+                     // Optionally fetch new suggestions based on the conversation context
+                     // fetchSuggestions(predictionResult ? predictionResult.title : null, text);
+                    
+                } catch (err) {
+                    console.error("Chat API Error:", err);
+                    hideTypingIndicator(); // Ensure indicator is hidden on error
+                    addMessage(`Xin lỗi, có lỗi xảy ra khi giao tiếp với trợ lý: ${err.message}`, true);
+                }
+            }
+            
+             async function fetchSuggestions(diseaseName) {
+                 // Don't fetch if no disease context exists
+                 if (!diseaseName) {
+                     suggestionsContainer.style.display = 'none';
+                     return;
+                 }
+                try {
+                    const response = await fetch('/api/chatbot/suggestions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ disease_name: diseaseName })
+                    });
+                    const data = await response.json();
+                    if (!response.ok) { throw new Error(data.error || 'Failed to get suggestions'); }
+                    renderSuggestions(data.suggestions);
+                } catch (err) {
+                    console.error("Error fetching suggestions:", err);
+                    suggestionsContainer.style.display = 'none';
+                }
+            }
+            
+            
+            function renderSuggestions(suggestions) {
+                if (!suggestions || suggestions.length === 0) {
+                    suggestionsContainer.style.display = 'none';
+                    return;
+                }
+                suggestionsContainer.innerHTML = '';
+                suggestions.forEach(suggestion => {
+                    const button = document.createElement('button');
+                    button.className = 'suggestion';
+                    button.textContent = suggestion;
+                    button.addEventListener('click', () => {
+                         // Add user message with the suggestion text
+                         addMessage(suggestion, false);
+                         // Set input value and send (or just send directly)
+                        chatInput.value = suggestion;
+                        sendMessage(); // Send the suggestion as a new message
+                    });
+                    suggestionsContainer.appendChild(button);
+                });
+                suggestionsContainer.style.display = 'flex';
+                 scrollToBottom(); // Scroll down to show suggestions if needed
+            }
+            
+            function addMessage(text, isBot) {
+                 hideTypingIndicator(); // Remove typing indicator before adding new message
+                const messageElement = document.createElement('div');
+                messageElement.className = `message ${isBot ? 'bot' : 'user'}`;
+                
+                 // Basic Markdown-like formatting for bold text **text**
+                 text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                 
+                 messageElement.innerHTML = text; // Use innerHTML to render bold tags
+                messagesContainer.appendChild(messageElement);
+                scrollToBottom();
+            }
+            
+            function showTypingIndicator() {
+                if (isTyping) return;
+                isTyping = true;
+                const typingElement = document.createElement('div');
+                typingElement.className = 'typing-indicator';
+                typingElement.id = 'typing-indicator';
+                typingElement.innerHTML = 'Đang trả lời<span>...</span>'; // Use span for dots
+                messagesContainer.appendChild(typingElement);
+                scrollToBottom();
+            }
+            
+            function hideTypingIndicator() {
+                isTyping = false;
+                const typingElement = document.getElementById('typing-indicator');
+                if (typingElement) {
+                    typingElement.remove();
+                }
+            }
+            
+            function scrollToBottom() {
+                // Add a small delay to allow the element to be added to the DOM
+                setTimeout(() => {
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }, 50);
+            }
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                 // Optionally hide the error after a few seconds
+                 setTimeout(() => {
+                     errorMessage.style.display = 'none';
+                 }, 5000);
+            }
+        });
+    </script>
+</body>
+</html> 
